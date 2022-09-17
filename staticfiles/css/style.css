@@ -1,0 +1,110 @@
+* {
+    padding: 0;
+    margin: 0; 
+    color: #242729;
+    font-family: 'IBM Plex Sans', serif; 
+ 
+}
+
+.zadanie {
+    outline: 2px solid grey;
+    text-align: left;
+    padding: 20px;
+}
+
+.zadanie2 {
+    outline: 2px solid rgb(203, 203, 203);
+    padding: 15px;
+}
+
+.zadanie3 {
+    outline: 1px solid rgb(203, 203, 203);
+    padding: 15px;
+}
+
+.zadanie_shadow {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+.zadanie_shadow2 {
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+}
+
+/* audio recorder start */
+.display{
+    width: 100%;
+    padding: 5px 0;
+    margin: 5px 0;
+}
+
+.controllers{
+    width: 100%;
+    padding: 5px 0;
+    margin: 5px 0;
+}
+
+button{
+    padding: 15px;
+    margin: 10px;
+    font-size: 16px;
+}
+
+button:hover{
+    cursor: pointer;
+}
+/* audio recorder end */
+
+
+/* Login - register start */
+.singin {
+    height: 100%;
+}
+
+.singin {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+}
+
+.form-signin .checkbox {
+    font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+/* Login - register end */
+
+/* Index Theme card end */
+.themes {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.theme_card {
+    margin: 15px;
+}
+/* Index Theme card end */
+
+

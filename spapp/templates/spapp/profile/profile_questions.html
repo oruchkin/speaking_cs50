@@ -1,0 +1,112 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+{% block header %}
+
+<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+
+{% endblock header %}
+
+
+
+{% block body %}
+<div class="container">
+    <div class="main-body">
+
+        <div class="row gutters-sm">
+
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <img src="{{ target_user.email|gravatar_url:150 }}" alt="user_img"
+                                class="rounded-circle" width="150">
+                            <div class="mt-3">
+                                <h4>{{target_user.username}}</h4>
+                                <p class="text-secondary mb-1">{{member}}</p>
+                                {% comment %} <button class="btn btn-primary">Follow</button>
+                                <button class="btn btn-outline-primary">Message</button> {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile' target_user.pk %}">Summary</a></h6>
+                            {% comment %} <span class="text-secondary">Reputation: {{counter.reputation}}</span> {% endcomment %}
+                        </li>
+          
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_answers' target_user.pk %}">Answers</a></h6>
+                            
+                            <span class="text-secondary">Answers: {{counter.answers_counter}}</span>
+                        </li>
+
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center bg-info">
+                           
+                            <h6 class="mb-0">Questions</h6>
+                            <span class="text-secondary">Questions: {{counter.question_counter}}</span>
+                        </li>
+
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_theme' target_user.pk %}">Themes</a></h6>
+                            <span class="text-secondary">Themes: {{counter.theme_counter}}</span>
+                        </li>
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_reputation' target_user.pk %}">Reputation</a></h6>
+                            <span class="text-secondary">Reputation: {{counter.reputation}}</span>
+                        </li>
+
+                    </ul>
+                </div>
+
+               
+
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-body">
+
+                        <h3>All - {{counter.question_counter}} questions:</h3>
+                        <table class="table">
+                            <tbody>
+                                {% if users_questions %}
+                                    {% for question in users_questions %}
+                                    <tr>
+                                        <td>
+                                            <div class="zadanie_pr">{{question.vote_count}}</div>
+                                        </td>
+                                        <td>
+                                            <div class="table_text">  <a href="{% url 'question_detailed' question.slug %}">{{question.title|slice:25}}...</a> </div>
+                                        </td>
+                                        <td>
+                                            <div class="table_text">{{question.time_created|date:"M d"}}</div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td>
+                                            <div class="zadanie_pr">No questions yet</div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+{% endblock body %}

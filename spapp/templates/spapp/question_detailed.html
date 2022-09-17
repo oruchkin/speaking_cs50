@@ -1,0 +1,319 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+Answers fo question {{question_obj.title|slice:30}}
+{% endblock title %}
+
+
+{% block header %}
+    <!-- css -->
+    <link href="{% static 'css/question_detailed.css' %}" rel="stylesheet">
+    <link href="{% static 'css/audioplayer.css' %}" rel="stylesheet">
+    <link href="{% static 'css/button.css' %}" rel="stylesheet">
+    
+    <link href="{% static 'css/modal_detailed_answer_delete.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vote.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"  integrity= "sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"  crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src= "https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"crossorigin="anonymous"></script>
+    <!-- java scripts -->
+    <script src=" {% static 'js/audioplayer.js' %} "></script>
+    <script src=" {% static 'js/vote_answer.js' %} "></script>
+    <script src=" {% static 'js/theme_detailed.js' %} "></script>
+    <link href="{% static 'css/theme_detailed.css' %}" rel="stylesheet">
+
+    
+    <script src=" {% static 'js/toast.js' %} "></script>
+    <link href="{% static 'css/toast.css' %}" rel="stylesheet">
+{% endblock header %}
+
+
+{% block body %}
+    <div class="container">
+        <br>        
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb ">  
+                <li class="breadcrumb-item"><a href=" {% url 'index' %} ">Home</a></li>
+                <li class="breadcrumb-item"><a href=" {% url 'theme_detailed' theme.slug %} ">Theme:  {{theme.title|slice:15}}..</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Answers: {{question_obj.title|slice:15}}.. </li>
+                <li class="breadcrumb-item"></li>
+            </ol>
+        </nav>
+        {% if answer_fail %}
+            <br><h1>An error has occurred, your answer has not been saved</h1><br> <br>  
+        {% endif %}
+        <div class="question_detail">
+            {% if message %}
+                <br>
+                <div class="zadanie2 shadow-lg p-3 mb-5 bg-white rounded">
+                    {{message}}
+                </div>
+                <br>
+            {% endif %}
+            
+                <div class="zadanie zadanie_shadow2 rounded">
+                    <h1>{{question_obj.title}}</h1>
+                    <p>created: <b>{{question_obj.time_created}}</b></p>
+                    <p>total anwsers: <b>{{question_obj.answer_counter}}</b></p>
+                    {% if users_answers_ammount %}
+                        <p>your anwsers: <b>{{users_answers_ammount}}</b></p>
+                    {% endif %}
+                    <a href="{% url 'new_audio_answer' question_obj.slug %}"><button class="button-74">Make new answer</button></a> 
+                </div>
+                <br>
+                <br>
+
+
+            <!--▄▀▄ █   █      ▄▀▄ █▄ █ █▀▀ █ █ █ █▀▀ █▀█ █▀▀ 
+                █▀█ █▄▄ █▄▄    █▀█ █ ▀█ ▄██ ▀▄▀▄▀ ██▄ █▀▄ ▄██ -->
+            <div class="zadanie shadow-lg bg-white rounded">
+                {% if all_answers %}
+                
+                    <h1>All answers:</h1>
+                    {% for answer in all_answers %}
+
+                        {% if answer.share_answer == True %}
+                            <div class="zadanie3 zadanie_shadow2 rounded" id="{{answer.pk}}">
+                        {% else %}
+                            <div class="hide_share_answer zadanie3 zadanie_shadow2 rounded "  id="{{answer.pk}}">
+                        {% endif %}
+                            {% if flagged == answer.pk %} 
+                            <p>Answer was reported successfully! <b>Thank you</b> for keeping community safe! Someone will check it <b>ASAP</b></p>
+                            {% endif %}
+                            <p style="margin-right:auto; margin-top:10px; "> <a style="text-decoration: none;" href="{% url 'profile' answer.author.pk %} "> <img src="{{ answer.author.email|gravatar_url:35 }} " alt="avatar"> &nbsp;<b>{{answer.author.username}}</b></a>
+                                &nbsp;&nbsp;&nbsp; created: <b>{{answer.time_created}}</b> &nbsp;&nbsp;&nbsp; 
+                                words total: <b>{{answer.words_total}}</b> &nbsp;&nbsp;&nbsp; words per second: <b>{{answer.words_per_second}}</b></p>
+                            <hr>
+                            <div class="audio_answer_grid">
+                                    <!-- vote others question -->
+                                    <div class="vote_fraction">
+                                     
+                                      
+                                        {% if answer.pk in  users_upvote_list %}
+                                            <span onclick="like_function({{answer.pk}})" id="like-{{answer.pk}}" class="vote_up_on"></span>
+                                        {% else %}
+                                            <span onclick="like_function({{answer.pk}})" id="like-{{answer.pk}}" class="vote_up_off"></span>
+                                        {% endif %}
+                                            <div id="counter-{{answer.pk}}">{{answer.vote_count}}</div>
+                                        {% if answer.pk in  users_downvote_list  %}
+                                            <span onclick="dislike_function({{answer.pk}})" id="dislike-{{answer.pk}}" class="vote_down_on"></span>
+                                        {% else %}
+                                            <span onclick="dislike_function({{answer.pk}})" id="dislike-{{answer.pk}}" class="vote_down_off"></span>
+                                        {% endif %}
+                                 
+                                    </div>
+                                    <div class="audio_fraction">
+                                        <p>Subtitles: {{answer.subtitles}} </p>
+                                    </div>
+                            </div>
+                            <audio preload="auto" controls>
+                                <source src="{{answer.audio_file.url}}">
+                            </audio>
+
+                            {% if answer.author == user %}
+                        
+                            <div style="display:flex;  align-items: center; justify-content: center;">
+                                <!-- public answer - share - edit - flag -->
+                                <div style="margin-right:auto; margin-top:10px; ">
+
+                                    <div class="link_inline">
+                                        <p class="share-button" onclick="share_question_button('{{answer.pk}}')"
+                                        id="share-button-{{answer.pk}}">Share</p>
+                                    </div>
+                                    <div class="link_inline">
+                                        <p role="button"  data-bs-toggle="collapse" 
+                                        data-bs-target="#edit_answer_{{answer.pk}}" 
+                                        aria-expanded="false" aria-controls="new_theme_index">Edit</p> 
+                                    </div>
+                                    {% if answer.author != user %}
+                                    <div class="link_inline">
+                                        <p role="button"  data-bs-toggle="collapse" 
+                                        data-bs-target="#edit_themes" 
+                                        aria-expanded="false" aria-controls="new_theme_index">Flag</p> 
+                                    </div>
+                                    {% endif %}
+                                    <label  class="toggle">
+                                        {% if answer.share_answer %}
+                                        <input class="toggle-checkbox" id="share_togle_{{answer.pk}}" onclick="toggle_share_answer({{answer.pk}})" checked type="checkbox" >
+                                        {% else %}
+                                        <input class="toggle-checkbox" id="share_togle_{{answer.pk}}" onclick="toggle_share_answer({{answer.pk}})"  type="checkbox" >
+                                        {% endif %}
+                                        <div class="toggle-switch"></div>
+                                        <span class="toggle-label">public answer</span>
+                                    </label>
+                                </div>
+
+
+
+                                <div class="delete_button">    
+                                    <!-- DELETE Button trigger modal -->
+                                    <a data-toggle="modal" 
+                                    data-target="#exampleModal" 
+                                    data-whatever="{{answer.pk}}" 
+                                    href="#"><button data-name="{{answer.pk}}" class="button_warning">Delete answer</button></a>
+                                    <!-- DELETE Modal -->
+                                    <div class="modal fade" id="exampleModal" 
+                                        tabindex="-1" role="dialog" 
+                                        aria-labelledby="exampleModalLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" 
+                                                        id="exampleModalLabel">
+                                                        Confirm answer deletion 
+                                                    </h5>
+                                                    <button type="button" class="close" 
+                                                        data-dismiss="modal" 
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p > This answer will be deleted, carefull it can't be undone</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                    
+                                                    <p id="ass_ss">delete button here with js</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            {% else %}
+                                <!-- if this post isn't users -->
+            
+                                <div class="link_inline">
+                                    <p class="share-button" onclick="share_question_button('{{answer.pk}}')"
+                                    id="share-button-{{answer.pk}}">Share</p>
+                                </div>
+
+                                <div class="link_inline">
+                                    <p role="button"  data-bs-toggle="collapse" 
+                                    data-bs-target="#edit_answer_{{answer.pk}}" 
+                                    aria-expanded="false" aria-controls="new_theme_index">Edit</p> 
+                                </div>
+                            
+                                <div class="link_inline">
+                                    <p role="button"  data-bs-toggle="collapse" 
+                                    data-bs-target="#flag_answer_{{answer.pk}}" 
+                                    aria-expanded="false" aria-controls="new_theme_index">Flag</p> 
+                                </div>
+                            {% endif %}
+                            <!--EDIT ANSWER logic both author and not author-->
+                            <div class="collapse" id="edit_answer_{{answer.pk}}">
+                                {% if  request.user == answer.author %}
+                                <form action="{% url 'question_detailed' question_obj.slug  %}" enctype="multipart/form-data" method="POST"> 
+                                    {% csrf_token %}
+                                    <div class="zadanie3 shadow-lg">
+                                        <p>Edit answer subtitles:</p>
+                                        <textarea name="answer_subtiltes", placeholder="Edit subtitles..." class="form-control"  rows="3">{{answer.subtitles}}</textarea>
+                                        <br>
+                                        <button class="button-7" role="button">Save edits</button>
+                                    </div>
+                                    <input type="hidden" name="edit_answer_pk" value="{{answer.pk}}">
+                                </form>
+                                {% else %}
+                                <p>Permission Denied! You are not allowed to edit this question.</p>
+                                {% endif %}
+                            </div>  
+
+                            <!-- FLAG ANSWER logic -->
+                            <div class="collapse" id="flag_answer_{{answer.pk}}">
+                                {% if user.is_authenticated %}
+                                    {% if  request.user != answer.author %}
+                                        <form action="{% url 'question_detailed' answer.pk %}" enctype="multipart/form-data" method="POST"> 
+                                            {% csrf_token %}
+                                            <div class="zadanie3 shadow-lg">
+                                                <p>Please, tell us about the report reason:</p>
+                                                <textarea name="flag_answer_reason", placeholder="Report reason..." class="form-control"  rows="3"></textarea>
+                                                <br>
+                                                <button class="button-7" role="button">Send report</button>
+                                            </div>
+                                            <input type="hidden" name="flag_answer_pk" value="{{answer.pk}}">
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                <h5>Please authorize for reporting.. </h5>
+                                {% endif %}
+                            </div>  
+
+                            <!--SHARE ANSWER logic both author and not author-->
+                            <div>
+                                <div class="share-dialog" id="share-dialog-{{answer.pk}}">
+                                    <header>
+                                        <h4 class="dialog-title">Share this question</h4>
+                                        <button class="close-button" id="close-button-{{answer.pk}}">
+                                            <svg><use href="#close"></use></svg>
+                                        </button>
+                                    </header>
+                                    <div class="link">
+                                        <div class="pen-url">{{full_share_path}}#{{answer.pk}}</div>
+                                        <button class="copy-link" value="{{full_share_path}}#{{answer.pk}}"
+                                        id="copy_button_{{answer.pk}}" 
+                                        onclick="copy_theme_question_share_link('copy_button_{{answer.pk}}')">Copy Link
+                                        </button>
+                                    </div>
+                                </div>
+                                <svg class="hidden">
+                                    <defs>
+                                        <symbol id="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                        class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" 
+                                        rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line>
+                                        <line x1="15" y1="9" x2="9" y2="15"></line></symbol>
+                                    </defs>
+                                </svg>
+                            </div>
+
+
+                        </div>
+                        <br>
+
+
+
+                       
+                    {% endfor %}
+                {% else %}    
+                <h1>No answers yet, feel free to be first one</h1>
+                {% endif %}
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+    
+
+
+
+{% endblock body %}  
+{% block out_body %}
+    
+    <script>
+        var question_pk = {{ question_obj.pk }};
+        var check_user = "{{user}}";
+        $(function() {
+           $('audio').audioPlayer();
+        });
+
+    </script>
+
+    <script>
+        $('#exampleModal').on('show.bs.modal', 
+        function (event) {
+            var li = $(event.relatedTarget)
+            var recipient = li.data('whatever')
+            var test_var = document.getElementById('ass_ss')
+            test_var.innerHTML = "<a href='/delete_answer/"+recipient+"'><button class='button_warning'>Delete answer</button>";
+            var modal = $(this)
+        })
+    </script>
+
+{% endblock out_body %}  

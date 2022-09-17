@@ -1,0 +1,380 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Theme: {{theme_obj.title}}
+{% endblock title %}
+
+{% block header %}
+
+    <link href="{% static 'css/theme_detailed.css' %}" rel="stylesheet">
+    <link href="{% static 'css/button.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vote.css' %}" rel="stylesheet">
+
+    <script src=" {% static 'js/theme_detailed.js' %} "></script>
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <script src=" {% static 'js/vote_question.js' %} "></script>
+    <script src=" {% static 'js/vote_theme.js' %} "></script>
+    <script src=" {% static 'js/toast.js' %} "></script>
+    <link href="{% static 'css/toast.css' %}" rel="stylesheet">
+{% endblock header %}
+
+
+{% block body %}
+    <div class="container">
+        <br>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb ">  
+                <li class="breadcrumb-item"><a href=" {% url 'index' %} ">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Theme: {{theme_obj.title|slice:15}}.. </li>
+                <li class="breadcrumb-item"></li>
+            </ol>
+        </nav>
+        {% if deleted_question %}
+            <!-- deleted question message-->
+            <p>Question with id <b>{{deleted_question}}</b> deleted successfully!</p>
+        {% elif flagged_theme %}
+            <!-- flag theme message-->
+            <p> <b>Report has been successfully sent, thank you for keeping community safe! Somebody will check it ASAP!</b> </p>
+        {% elif edit_theme %}
+            <p>Theme edited successfully!</p>
+        {% endif %}
+        <div class="theme_detail">
+            <!-- THEME ROW -->
+            <div class="theme_row zadanie shadow-lg bg-white rounded">
+                <div class="left_fraction zadanie2 shadow-lg  bg-white rounded">
+                    <h1>{{theme_obj.title}}</h1>
+
+                            <div class="question_vote_grid">
+                                <div class="vote_question_fraction">
+                                    <br>
+                                    {% if theme_vote == "upvote" %}
+                                        <span onclick="like_function_t({{theme_obj.pk}})" id="like_t{{theme_obj.pk}}" class="vote_up_on"></span> 
+                                    {% else %}
+                                        <span onclick="like_function_t({{theme_obj.pk}})" id="like_t{{theme_obj.pk}}" class="vote_up_off"></span>
+                                    {% endif %}
+                                    <div id="counter_t{{theme_obj.pk}}">{{theme_obj.vote_count}}</div>
+                                    {% if theme_vote == "downvote"  %}
+                                        <span onclick="dislike_function_t({{theme_obj.pk}})" id="dislike_t{{theme_obj.pk}}" class="vote_down_on"></span> 
+                                    {% else %}
+                                        <span onclick="dislike_function_t({{theme_obj.pk}})" id="dislike_t{{theme_obj.pk}}" class="vote_down_off"></span>
+                                    {% endif %}
+                                </div>
+                                    
+                                <div class="stat_question_fraction">
+                                    <h4>&nbsp;&nbsp;Statistics:</h4>
+                                    <p>&nbsp;&nbsp; Questions: {{theme_obj.questions_count}}</p>
+                                    <p>&nbsp;&nbsp; Answers: {{how_many_answers}}</p>
+                                    <p style="margin-right:auto; margin-top:10px; ">&nbsp;&nbsp;<a style="text-decoration: none;" href="{% url 'profile' theme_obj.author.pk %}"> <img src="{{ theme_obj.author.email|gravatar_url:35 }} " alt="avatar"> &nbsp;{{theme_obj.author.username}}</a>
+                                </div>
+                                
+                            </div>
+
+        
+
+                    <hr>
+                    <div class="edit_theme_links">
+                        <!-- share ~ edit ~ flag ~ THEME -->
+                        <div class="edit_block">
+
+                            <div class="edit_theme_links">
+                                <div class="link_inline">
+                                    <p class="share-button" onclick="share_theme_button('{{theme_obj.pk}}')"
+                                    id="share-button-t{{theme_obj.pk}}">Share</p>
+                                </div>
+
+                                <div class="link_inline">
+                                    <p role="button"  data-bs-toggle="collapse" 
+                                    data-bs-target="#edit_theme" 
+                                    aria-expanded="false" aria-controls="new_theme_index">Edit</p> 
+                                </div>
+
+                                <div class="link_inline">
+                                    {% if  request.user != theme_obj.author %}
+                                    <p role="button"  data-bs-toggle="collapse" 
+                                    data-bs-target="#flag_question" 
+                                    aria-expanded="false" aria-controls="new_theme_index">Flag</p> 
+                                    {% else %}
+                                    <p role="button"  data-bs-toggle="collapse" 
+                                    data-bs-target="#flag_question" 
+                                    aria-expanded="false" aria-controls="new_theme_index">Delete</p> 
+                                    {% endif %}
+                                </div>
+
+                                <!--EDIT THEME logic-->
+                                <div class="collapse" id="edit_theme">
+                                    {% if  request.user == theme_obj.author %}
+                                    <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                        {% csrf_token %}
+                                        <div class="zadanie3 shadow-lg">
+                                            <p>Edit this question:</p>
+                                            {{ edit_theme_form.as_table }}
+                                            <br>
+                                            <button class="button-7" role="button">Save edits</button>
+                                        </div>
+                                        <input type="hidden" name="edit_theme_pk" value="{{theme_obj.pk}}">
+                                    </form>
+                                    {% else %}
+                                    <p>Permission Denied! You are not allowed to edit this question.</p>
+                                    {% endif %}
+                                </div>  
+
+                                <!-- FLAG AND DELETE - THEME logic -->
+                                <div class="collapse" id="flag_question">
+                                    <!-- FLAG -->
+                                    {% if user.is_authenticated %}
+                                    {% if  request.user != theme_obj.author %}
+                                        <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                            {% csrf_token %}
+                                            <div class="zadanie3 shadow-lg">
+                                                <p>Flag theme, tell us about the report reason:</p>
+                                                {{ flag_theme_form.as_table }}
+                                                <br>
+                                                <button class="button-7" role="button">Send report</button>
+                                            </div>
+                                            <input type="hidden" name="flag_theme_pk" value="{{theme_obj.pk}}">
+                                        </form>
+                                    <!-- DELETE -->
+                                    {% else %}
+                                        <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                            {% csrf_token %}
+                                            <div class="zadanie3 shadow-lg">
+                                                <p>By clicking this button - this answer will be <b>DELETED FOREVER</b>, carefull <b>it can't be undone</b></p>
+                                                <button class="btn btn-danger" role="button">I'm 100% sure, DELETE my question!</button>
+                                            </div>
+                                            <input type="hidden" name="delete_theme_pk" value="{{theme_obj.pk}}">
+                                        </form>
+                                    {% endif %}
+                                    {% else %}
+                                        <h4>Please authorize for reporting..</h4>
+                                    {% endif %}
+                                </div>  
+
+                                <!--SHARE theme logic-->
+                                <div>
+                                    <div class="share-dialog" id="share-dialog-t{{theme_obj.pk}}">
+                                        <header>
+                                            <h4 class="dialog-title">Share this theme </h4>
+                                            <button class="close-button" id="close-button-t{{theme_obj.pk}}">
+                                                <svg><use href="#close"></use></svg>
+                                            </button>
+                                        </header>
+                                        <div class="link">
+                                            <div class="pen-url">{{full_share_path}}#share-dialog-blok-{{theme_obj.pk}}</div>
+                                            <button class="copy-link" value="{{full_share_path}}"
+                                            id="copy_button_t{{theme_obj.pk}}" 
+                                            onclick="copy_theme_question_share_link('copy_button_t{{theme_obj.pk}}')">Copy Link
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <svg class="hidden">
+                                        <defs>
+                                            <symbol id="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                            class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" 
+                                            rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line>
+                                            <line x1="15" y1="9" x2="9" y2="15"></line></symbol>
+                                        </defs>
+                                    </svg>
+                                </div>
+
+                            </div> 
+                        </div>
+                    </div>
+
+
+                </div>
+                
+                <div class="right_fraction zadanie2 shadow-lg  bg-white rounded">
+                    <img style="width:100%;" src="{{theme_obj.image.url}}" alt="">
+                </div>
+            </div>
+
+            <br>
+          
+            <div class="zadanie shadow-lg  bg-white rounded">
+                <!-- NEW QUESTION-->
+                {% if user.is_authenticated %}
+                <p><button class="button-7" role="button" type="button" data-bs-toggle="collapse" data-bs-target="#new_theme_index" aria-expanded="false" aria-controls="new_theme_index">New Question</button> </p>
+                <div class="collapse" id="new_theme_index">
+            
+                    <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                        {% csrf_token %}
+                        <div class="zadanie3 shadow-lg">
+                            <p>Create a question that you would be proud of</p>
+                            {{ new_question_form.as_table }}
+                            <br>
+                            <button class="button-7" role="button">Submit new question</button>
+                        </div>
+                        <input type="hidden" name="new_question" value="{{theme_obj.pk}}">
+                    </form>
+                </div><br>
+                {% endif %}
+                {% comment %} █▀█  █ █ █▀▀ █▀▀ ▀█▀ ▀█▀ █▀█ █▄ █    █   █▀█ █▀█ █▀█ 
+                              █▄▀▄ █▄█ ██▄ ▄██  █  ▄█▄ █▄█ █ ▀█    █▄▄ █▄█ █▄█ █▀▀  {% endcomment %}
+                {% if not all_questions %}
+                    <p>There is no questions yet. </p>
+                    <p>If you create one, it would be great!</p>
+                {% endif %}
+                {% for question in all_questions %}
+                    <div class="question_row" >
+                        <div class="zadanie2 shadow-lg  rounded" id="share-dialog-blok-{{question.pk}}">
+                            {% if edited_question == question.pk %}
+                                <p> <b>Question was edited successfully </b></p>
+                            {% endif %}
+                            {% if flagged_question == question.pk %}
+                                <p> <b>Report has been successfully sent, thank you for keeping community safe!</b></p>
+                            {% endif %}
+                            {% if new_question == question.pk %}
+                                <p> <b>Success! New question created!</b></p>
+                            {% endif %}
+
+                            <a href="{% url 'question_detailed' question.slug %} "><h4>{{question.title}}</h4></a>
+
+                            <hr>
+                            <div class="question_vote_grid">
+                                <div class="vote_question_fraction">
+                                    {% if question.pk in  users_upvote_list %}
+                                        <span onclick="like_function({{question.pk}})" id="like-{{question.pk}}" class="vote_up_on"></span> 
+                                    {% else %}
+                                        <span onclick="like_function({{question.pk}})" id="like-{{question.pk}}" class="vote_up_off"></span>
+                                    {% endif %}
+                                    <div id="counter-{{question.pk}}">{{question.vote_count}}</div>
+                                    {% if question.pk in  users_downvote_list  %}
+                                        <span onclick="dislike_function({{question.pk}})" id="dislike-{{question.pk}}" class="vote_down_on"></span> 
+                                    {% else %}
+                                        <span onclick="dislike_function({{question.pk}})" id="dislike-{{question.pk}}" class="vote_down_off"></span>
+                                    {% endif %}
+
+                                </div>
+                                    
+                                <div class="stat_question_fraction">
+                                    <p>statistics: <b>{{question.answer_counter}}</b> answers</p>
+                                    <p> <a style="text-decoration: none;" href=" {% url 'profile' question.author.pk %} "><img src="{{ question.author.email|gravatar_url:35 }} " alt="avatar"> {{question.author.username}}</a></p>
+                                    <button class="button-74" onclick="say('{{question.title}}')" id="ajax">Read question</button>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- share ~ edit ~ flag ~ QUESTIONS -->
+                            <div class="edit_block">
+                                <div class="edit_theme_links">
+                                    <div class="link_inline">
+                                        <p class="share-button" onclick="share_question_button('{{question.pk}}')"
+                                        id="share-button-{{question.pk}}">Share</p>
+                                    </div>
+
+                                    <div class="link_inline">
+                                        <p role="button"  data-bs-toggle="collapse" 
+                                        data-bs-target="#edit_question_{{question.pk}}" 
+                                        aria-expanded="false" aria-controls="new_theme_index">Edit</p> 
+                                    </div>
+
+                                    <div class="link_inline">
+                                        {% if request.user != question.author %}
+                                        <p role="button"  data-bs-toggle="collapse" 
+                                        data-bs-target="#flag_question_{{question.pk}}" 
+                                        aria-expanded="false" aria-controls="new_theme_index">Flag</p> 
+                                        {% else %}
+                                        <p role="button"  data-bs-toggle="collapse" 
+                                        data-bs-target="#flag_question_{{question.pk}}" 
+                                        aria-expanded="false" aria-controls="new_theme_index">Delete</p> 
+                                        {% endif %}
+                                    </div>
+
+                                    <!--EDIT QUESTION logic-->
+                                    <div class="collapse" id="edit_question_{{question.pk}}">
+                                        {% if  request.user == question.author %}
+                                        <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                            {% csrf_token %}
+                                            <div class="zadanie3 shadow-lg">
+                                                <p>Edit this question:</p>
+                                                {{ edit_question_form.as_table }}
+                                                <br>
+                                                <button class="button-7" role="button">Save edits</button>
+                                            </div>
+                                            <input type="hidden" name="edit_question_pk" value="{{question.pk}}">
+                                        </form>
+                                        {% else %}
+                                        <p>Permission Denied! You are not allowed to edit this question.</p>
+                                        {% endif %}
+                                    </div>  
+
+                                    <!-- FLAG AND DELETE - QUESTION logic -->
+                                    <div class="collapse" id="flag_question_{{question.pk}}">
+                                        {% if user.is_authenticated %}
+                                            {% if  request.user != question.author %}
+                                                <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                                    {% csrf_token %}
+                                                    <div class="zadanie3 shadow-lg">
+                                                        <p>Flag question, tell us about the report reason:</p>
+                                                        {{ flag_question_form.as_table }}
+                                                        <br>
+                                                        <button class="button-7" role="button">Send report</button>
+                                                    </div>
+                                                    <input type="hidden" name="flag_question_pk" value="{{question.pk}}">
+                                                </form>
+                                            {% else %}
+                                                <form action="{% url 'theme_detailed' theme_obj.slug %}" enctype="multipart/form-data" method="POST"> 
+                                                    {% csrf_token %}
+                                                    <div class="zadanie3 shadow-lg">
+                                                        <p>By clicking this button - this answer will be <b>DELETED FOREVER</b>, carefull <b>it can't be undone</b></p>
+                                                        <button class="btn btn-danger" role="button">I'm 100% sure, DELETE my question!</button>
+                                                    </div>
+                                                    <input type="hidden" name="delete_question_pk" value="{{question.pk}}">
+                                                </form>
+                                            {% endif %}
+                                        {% else %}
+                                        <h4>Please authorize for reporting</h4>
+                                        {% endif %}
+                                    </div>  
+
+
+                                    <!--SHARE question logic-->
+                                    <div>
+                                        <div class="share-dialog" id="share-dialog-{{question.pk}}">
+                                            <header>
+                                                <h4 class="dialog-title">Share this question</h4>
+                                                <button class="close-button" id="close-button-{{question.pk}}">
+                                                    <svg><use href="#close"></use></svg>
+                                                </button>
+                                            </header>
+                                            <div class="link">
+                                                <div class="pen-url">{{full_share_path}}#share-dialog-blok-{{question.pk}}</div>
+                                                <button class="copy-link" value="{{full_share_path}}#share-dialog-blok-{{question.pk}}"
+                                                id="copy_button_{{question.pk}}" 
+                                                onclick="copy_theme_question_share_link('copy_button_{{question.pk}}')">Copy Link
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <svg class="hidden">
+                                            <defs>
+                                                <symbol id="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                                class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" 
+                                                rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line>
+                                                <line x1="15" y1="9" x2="9" y2="15"></line></symbol>
+                                            </defs>
+                                        </svg>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    
+
+
+
+    </div>
+    <br><br><br>
+{% endblock body %}  
+
+{% block out_body %}
+    <script>
+        var check_user = "{{user}}";
+    </script>
+{% endblock out_body %}  

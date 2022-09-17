@@ -1,0 +1,167 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+{% block header %}
+<link href="{% static 'css/stack.css' %}" rel="stylesheet">
+<link href="{% static 'css/button.css' %}" rel="stylesheet">
+
+{% endblock header %}
+
+
+{% block body %}
+
+ 
+<!--█▀▀ ▀█▀ ▄▀▄ █▀▀ █▄▀ 
+    ▄██  █  █▀█ █▄▄ █ █ -->
+{% if user.is_authenticated %}
+<br><br>
+{% else %}
+<div class="tour-tabbing-outer">
+    <div class="container">
+        <div class="stack">
+            <header><img class="stack_logo" src="{% static '/img/logos/logo.png' %}"></header>
+            {% comment %} <div class="tour-tabbing">
+                <div class="grid-col-3-6-3">
+                    <div class="col col-left">
+                        <ul class="flex-listing">
+                            <li data-tab="tab1" class="active">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/ask-a-question.svg' %}"> Ask a question
+                                </a>
+                            </li>
+                            <li data-tab="tab2">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/votes.svg' %}"> Vote on everything
+                                </a>
+                            </li>
+                            <li data-tab="tab3">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/answer.svg' %}"> Answer questions
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col col-center">
+                        <div id="tab1" class="tab-content current">
+                            <img src="{% static '/img/logos/stack/illo-feats-ask.svg' %}">
+                            <h4>Ask a question publicly on 170+ Stack Exchange sites or privately using Stack Overflow for
+                                Teams.</h4>
+                        </div>
+                        <div id="tab2" class="tab-content">
+                            <img src="{% static '/img/logos/stack/illo-feats-vote.svg' %}">
+                            <h4>Upvoting helps exceptional content rise to the top and bring awareness to useful responses.
+                            </h4>
+                        </div>
+                        <div id="tab3" class="tab-content">
+                            <img src="{% static '/img/logos/stack/illo-feats-answer.svg' %}">
+                            <h4>Answer a question to share your knowledge with the world or in private with your team.</h4>
+                        </div>
+                        <div id="tab4" class="tab-content">
+                            <img src="{% static '/img/logos/stack/illo-feats-tags.svg' %}">
+                            <h4>Tags help make information searchable and find answers that are important to you.</h4>
+                        </div>
+                        <div id="tab5" class="tab-content">
+                            <img src="{% static '/img/logos/stack/illo-feats-accept.svg' %}">
+                            <h4>Accept the answer which solved your problem to let others benefit from the valuable
+                                information.</h4>
+                        </div>
+                        <div id="tab6" class="tab-content">
+                            <img src="{% static '/img/logos/stack/illo-feats-recognize.svg' %}">
+                            <h4>Our reputation system rewards both the new & experienced based on contribution and activity.
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="col col-right">
+                        <ul class="flex-listing">
+                            <li data-tab="tab4">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/tags.svg' %}"> Tag your question
+                                </a>
+                            </li>
+                            <li data-tab="tab5">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/accept.svg' %}"> Accept an answer
+                                </a>
+                            </li>
+                            <li data-tab="tab6">
+                                <a href="#">
+                                    <img src="{% static '/img/logos/stack/get-recognized.svg' %}"> Get recognized
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+<!--█▄ ▄█ ▄▀▄ ▀█▀ █▄ █    █▀▀ █▀█ █▄ █ ▀█▀ ▄▀▄ ▀█▀ █▄ █ █▀▀ █▀█ 
+    █ ▀ █ █▀█ ▄█▄ █ ▀█    █▄▄ █▄█ █ ▀█  █  █▀█ ▄█▄ █ ▀█ ██▄ █▀▄ -->
+
+<div class="container">
+    <div class="zadanie3 zadanie_shadow2">
+        
+        <!-- message -->
+        {% if  delete_theme_title %}
+            <p> Theme <b>'{{delete_theme_title}}'</b> deleted successfully! </p>
+        {% endif %}
+
+        <!--█▄ █ █▀▀ █ █ █    ▀█▀ █▄█ █▀▀ █▄ ▄█ █▀▀ 
+            █ ▀█ ██▄ ▀▄▀▄▀     █  █ █ ██▄ █ ▀ █ ██▄ -->
+        {% if user.is_authenticated %}
+            <p><button class="button-7" role="button" type="button" data-bs-toggle="collapse" data-bs-target="#new_theme_index" aria-expanded="false" aria-controls="new_theme_index">New Theme</button> </p>
+            <div class="collapse" id="new_theme_index">
+        
+                <form action="{% url 'index' %}" enctype="multipart/form-data" method="POST"> 
+                    {% csrf_token %}
+                    <div class="zadanie3 shadow-lg">
+                        <p>After you create new theme, it will be hidden by default, you'll need to add in this theme at least 3 questions, to be able to share this theme</p>
+                        {{ new_theme_form.as_table }}
+                        <br>
+                        <button class="button-7" role="button">Submit new Theme</button>
+                    </div>
+                </form>
+            </div>
+            <hr>
+        {% endif %}
+
+        <!--▀█▀ █▄█ █▀▀ █▄ ▄█ █▀▀ █▀▀ 
+             █  █ █ ██▄ █ ▀ █ ██▄ ▄██ -->
+        <br>
+        <div class="themes">
+            {% for theme in  all_themes %}
+            <div class="theme_card card shadow-lg" style="width: 19rem; ">
+                <!--delete this style for formating by hands bellow-->
+                <img class="card-img-top" style="max-width: 100%; height: 200px;  object-fit:  scale-down;" src="{{theme.image.url}}" alt="Card image cap">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{theme.title}}</h5>
+                    <p class="card-text">Statistics: {{theme.questions_count}} questions </p>
+                    <p class="card-text">Rating: {{theme.vote_count}} </p>
+       
+                    <a href=" {% url 'theme_detailed' theme.slug %}"><button class="button-62"
+                            role="button-7">{{theme.title}}</button></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br><br>
+
+    {% comment %} this is script for stack {% endcomment %}
+    <script type="text/javascript">
+        $('.flex-listing > li').click(function () {
+            var tab_id = $(this).attr('data-tab');
+            $('.flex-listing > li').removeClass('active');
+            $('.tab-content').removeClass('current');
+            $(this).addClass('active');
+            $("#" + tab_id).addClass('current');
+        });
+    </script>
+
+
+    {% endblock body %}

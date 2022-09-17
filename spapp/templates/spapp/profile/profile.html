@@ -1,0 +1,301 @@
+{% extends "spapp/layout.html" %}
+
+{% load static %}
+
+{% block header %}
+
+
+<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+
+{% endblock header %}
+
+
+
+{% block body %}
+<div class="container">
+    <div class="main-body">
+
+
+        <div class="row gutters-sm">
+
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            {% comment %} https://bootdey.com/img/Content/avatar/avatar7.png {% endcomment %}
+                            <img src="{{ target_user.email|gravatar_url:150 }}" alt="user_img"
+                                class="rounded-circle" width="150">
+                            <div class="mt-3">
+                                <h4>{{target_user.username}}</h4>
+                                <p class="text-secondary mb-1">{{member}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item  d-flex justify-content-between align-items-center bg-info">
+                            <h6 class="mb-0">Summary</h6>
+                            {% comment %} <span class="text-secondary">Reputation: {{counter.reputation}}</span> {% endcomment %}
+                        </li>
+          
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_answers' target_user.pk %}">Answers</a></h6>
+                            <span class="text-secondary">Answers: {{counter.answers_counter}}</span>
+                        </li>
+
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_questions' target_user.pk %}">Questions</a></h6>
+                            <span class="text-secondary">Questions: {{counter.question_counter}}</span>
+                        </li>
+
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_theme' target_user.pk %}">Themes</a></h6>
+                            <span class="text-secondary">Themes: {{counter.theme_counter}}</span>
+                        </li>
+
+                        <li class="list-group-item  d-flex justify-content-between align-items-center ">
+                            <h6 class="mb-0"><a href="{% url 'profile_reputation' target_user.pk %}">Reputation</a></h6>
+                            <span class="text-secondary">Reputation: {{counter.reputation}}</span>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+
+            
+            <div class="col-md-9">
+                {% comment %} <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Full Name</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                Kenneth Valdez
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Email</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                fip@jukmuh.al
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Phone</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                (239) 816-9029
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Mobile</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                (320) 380-4539
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Address</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                Bay Area, San Francisco, CA
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <a class="btn btn-info " target="__blank"
+                                    href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+
+
+                <!-- █▀▄ ▄▀▄ ▀█▀ ▄▀▄    █▄▄ █   █▀█ █▀▀ █▄▀ █▀▀ 
+                     █▄▀ █▀█  █  █▀█    █▄█ █▄▄ █▄█ █▄▄ █ █ ▄██  -->
+                <div class="row gutters-sm">
+                    <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <!--ANSWERS-->
+                            <div class="card-body">
+
+                                
+                                <h3 class="d-flex align-items-center">Answers</h3>
+                                <a style="text-decoration:none;" href="{% url 'profile_answers' target_user.pk %}"><small>View all {{counter.answers_counter}} answers</small> </a>
+                                <table class="table table-striped">
+                                    <tbody>
+                                        {% if users_answers %}
+                                            {% for answer in users_answers %}
+                                            <tr>
+                                                <td>
+                                                    <div class="zadanie_pr">{{answer.vote_count}}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">  <a href="{% url 'question_detailed' answer.question.slug %}#{{answer.pk}}">{{answer.subtitles|slice:25}}...</a> </div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">{{answer.time_created|date:"M d"}}</div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="table_text">
+                                                    No answers yet
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+
+
+
+
+
+
+                                    </tbody>
+                                </table>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <!--Questions-->
+                            <div class="card-body">
+                                <h3 class="d-flex align-items-center mb-3">Questions</h3>
+                                <a style="text-decoration:none;" href="{% url 'profile_questions' target_user.pk %}"><small>View all {{counter.question_counter}} questions</small> </a>
+                                <table class="table">
+                                    <tbody>
+                                        {% if users_questions %}
+                                            {% for question in users_questions %}
+                                            <tr>
+                                                <td class="table_text">
+                                                    <div class="zadanie_pr">{{question.vote_count}}</div>
+                                                </td>
+                                                <td class="table_text">
+                                                    <div class="table_text">  <a href="{% url 'question_detailed' question.slug %}">{{question.title|slice:25}}...</a> </div>
+                                                </td>
+                                                <td class="table_text">
+                                                    <div class="table_text">{{question.time_created|date:"M d"}}</div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="table_text">
+                                                    No answers yet
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <!--THEMES-->
+                            <div class="card-body">
+
+                                <h3 class="d-flex align-items-center mb-3">Themes</h3>
+                                <a style="text-decoration:none;" href="{% url 'profile_theme' target_user.pk %}"><small>View all {{counter.theme_counter}} themes</small> </a>
+                                
+                                <table class="table">
+                                    <tbody>
+                                        {% if users_themes %}
+                                            {% for theme in users_themes %}
+                                            <tr>
+                                                <td>
+                                                    <div class="zadanie_pr">{{theme.vote_count}}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">  <a href="{% url 'theme_detailed' theme.slug %}">{{theme.title|slice:25}}...</a> </div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">{{theme.time_created|date:"M d"}}</div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="table_text">
+                                                    No themes yet
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 mb-3">
+                        <div class="card h-100">
+                            <!--Reputation-->
+                            <div class="card-body">
+
+                                <h3 class="d-flex align-items-center mb-3">Reputation</h3>
+                                <a style="text-decoration:none;" href="{% url 'profile_reputation' target_user.pk %}"><small>View all {{counter.reputation_counter}} reputations</small> </a>
+                                
+                                <table class="table">
+                                    <tbody>
+                                        {% if users_reputation %}
+                                            {% for reputation in users_reputation %}
+                                            <tr>
+                                                <td>
+                                                    <div class="zadanie_pr">{{reputation.amount}}</div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">  <a href="{{reputation|profile_reputation_link}}">{{reputation|profile_reputation_title}}</a> </div>
+                                                </td>
+                                                <td>
+                                                    <div class="table_text">{{reputation.created|date:"M d"}}</div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="table_text">
+                                                    No reputation yet
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+{% endblock body %}

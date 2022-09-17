@@ -1,0 +1,103 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+
+{% block header %}
+<link href="{% static 'css/ratings.css' %}" rel="stylesheet">
+{% endblock header %}
+
+
+
+{% block body %}
+    <br>
+    <div class="container">
+
+
+
+
+        <div class="row">
+            <div class="col center_div">
+                <p>
+                    <a href=" {% url 'rating_user' %} ">Users</a>
+                </p>
+            </div>
+            <div class="col center_div">
+                <p>
+                    <a href="{% url 'rating_theme' %}">Themes</a>
+                </p>
+            </div>
+
+            <div class="col center_div">
+                <p>
+                    Questions
+                </p>
+            </div>
+            <div class="col center_div">
+                <p>
+                    <a href="{% url 'rating_answer' %}">Answers</a>
+                </p>
+            </div>
+            <hr>
+        </div>
+
+        <br>
+
+
+
+
+        <table class="table table-bordered border-dark table-hover table-secondary">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Question</th>
+                    <th scope="col">Votes</th>
+                    <th scope="col">Questions</th>
+                    <th scope="col">Answers</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for question in modifed_questions %}
+                <tr>
+                    <th scope="row">{{question.position}}</th>
+                    <td> <a style="text-decoration: none;" href=" {% url 'question_detailed' question.slug %} "> {{question.title}}</a></td>
+                    <td>{{question.vote_count}}</td>
+                    <td>{{question.vote_count}}</td>
+                    <td>{{question.answer_counter}}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+
+
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <a class="page-link" href="?page=1">First</a>
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{page_obj.previous_page_number}}</a>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">First</a>
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                    <a class="page-link" href="#">{{ page_obj.number }} <span class="sr-only"></span></a>
+                </li>
+                {% if page_obj.has_next %}
+                    <li>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+                    </li>
+                    <li>
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"> Last</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

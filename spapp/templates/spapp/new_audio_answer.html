@@ -1,0 +1,104 @@
+{% extends "spapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+New answer - {{question_obj.title|slice:30}}
+{% endblock title %}
+
+
+{% block header %}
+<link href="{% static 'css/loading.css' %}" rel="stylesheet">
+<link href="{% static 'css/button.css' %}" rel="stylesheet">
+<script src=" {% static 'js/audioplayer.js' %} "></script>
+<link href="{% static 'css/audioplayer.css' %}" rel="stylesheet">
+
+{% endblock header %}
+
+
+{% block body %}
+<div class="container">
+    <br>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb ">
+            <li class="breadcrumb-item"><a href=" {% url 'index' %} ">Home</a></li>
+            <li class="breadcrumb-item"><a href=" {% url 'theme_detailed' question_obj.theme.slug %} ">Theme: {{question_obj.theme.title|slice:15}}..</a></li>
+            <li class="breadcrumb-item"><a href=" {% url 'question_detailed' question_obj.slug %} ">Answers: {{question_obj.title|slice:15}}..</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New answer: {{question_obj.title|slice:15}}.. </li>
+            <li class="breadcrumb-item"></li>
+        </ol>
+    </nav>
+    <div class="question_detail">
+        <p>new answer - {{question_obj.title}}</p>
+        <hr>
+        <div class="zadanie2 shadow-lg p-3 mb-5 bg-white rounded">
+            <h1>New answer</h1>
+
+            <br>
+            {% if user.is_authenticated %}
+            <div class="container">
+                <div class="display">
+                    <!-- Add Messages and audio tag here -->
+                </div>
+                <div class="controllers">
+                    <!-- Start, stop, download -->
+                </div>
+            </div>
+            {% else %}
+            <h5>For creating new answer you have to authorize</h5>
+            <p>please <a href=" {% url 'login' %} ">log in </a> </p>
+            {% endif %}
+
+            <form onsubmit="return false;" id="form_subtitles" style="display: none">
+                <div class="form-group">
+                    <br>
+                    <h3>Answer statistics:</h3>
+                    <p>Words total: <b id="words_counter"></b></p>
+                    <p>Answer length: <b id="audio_lenght"></b></p>
+                    <p>Words per second: <b id="words_per_second"></b></p>
+                    <br>
+                    <label for="exampleFormControlTextarea1">Subtitles for audio, edit if needed:</label>
+                    <textarea class="form-control" id="subtitles_text_area" rows="10">dasdsa</textarea>
+                    <br>
+
+                    <div class="container-switch">
+                        <h3>Share answer publicly?</h3>
+                        <div class="checkbox-container green">
+                            <input type="checkbox" name="share_publicly" id="toggle2" checked/>
+                            <label for="toggle2"></label>
+                            <div class="active-circle"></div>
+                            <input type="hidden" value="{{question_obj.slug}}" id="question_slug"/>
+                        </div>
+                    </div>
+                    <br><br>
+                    <button onclick="save_audio_answer_initialize()" class="button-74">Post answer</button>
+                </div>
+            </form>
+            <br>
+        </div>
+        <br>
+
+        {% for answer in all_answers %}
+        <div class="zadanie">
+            {{answer.audio_file.url}}
+            <p>Author: {{answer.author.username}}</p>
+            <audio preload="auto" controls>
+                <source src="{{answer.audio_file.url}}">
+            </audio>
+        </div>
+        <br>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!--loading circle-->
+<div class="modal" id="loading_circle"></div>
+{% endblock body %}
+{% block out_body %}
+<script src="{% static 'js/sound_recorder.js' %}"></script>
+<script>
+    var question_pk = {{question_obj.pk}};
+    var user_pk = {{user.pk}};
+</script>
+
+{% endblock out_body %}
